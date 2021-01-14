@@ -144,6 +144,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	const text = document.querySelector(`textarea[name="text"]`);
 	const password = document.querySelector(`input[name="password"]`);
 
+	const checkUserInputs = () => {
+		/* The function to check and verify the user inputs in the text and password fields. If the user enters a empty value or just whitespaces in any of the fields, then the function returns false. Exception is for the text field, there you can enter a hell lot of whitespaces there LOL! ;-). But, remember never end the password input field with a whitespace, otherwise the function would return an error */
+
+		if (text.value.length == 0 || password.value.length == 0) {
+			return false;
+		} else {
+			let blankValue = false;
+			for (let i in text) {
+				if (i == " ") {
+					blankValue = true;
+				} else {
+					blankValue = false;
+				}
+			}
+			if (blankValue) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
 	// Getting the buttons on the HTML document
 	const encryptBtn = document.getElementById("encrypt-btn");
 	const decryptBtn = document.getElementById("decrypt-btn");
@@ -155,6 +177,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 	encryptBtn.addEventListener("click", (e) => {
 		/* When the user clicks on the encrypt button, this function is called. The function first reads the user inputs and then sends a POST request on this page. */
 
+		// Verifying the user inputs (error message only on blank inputs)
+		if (!checkUserInputs()) {
+			alert(`Please enter proper details in the input boxes`);
+			return 0;
+		}
+
 		e.preventDefault();
 		// Creating the POST request data
 		let data = new FormData();
@@ -163,10 +191,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		data.append("method", "encryption");
 
 		// Sending the POST request to the PHP backend
-		fetch("/", {body : data, method : "post"}).then(response => response.text()).then(response => resultContainer.innerHTML = `<h3>Result of encryption :</h3><br><pre>${response}</pre>`);
+		fetch("/", {body : data, method : "post"}).then(response => response.text()).then(response => resultContainer.innerHTML = `<h3>Result of encryption :</h3><br><pre style="white-space: pre-wrap">${response}</pre>`);
 	});
 	decryptBtn.addEventListener("click", (e) => {
 		/* When the user clicks on the decrypt button, this function is called. The function first reads the user inputs and then sends a POST request on this page. */
+
+		// Verifying the user inputs (error message only on blank inputs)
+                if (!checkUserInputs()) {
+                        alert(`Please enter proper details in the input boxes`);
+                        return 0;
+                }
 
 		e.preventDefault();
 		// Creating the POST request data
@@ -176,7 +210,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		data.append("method", "decryption");
 
 		// Sending the POST request to the PHP backend
-		fetch("/", {body : data, method : "post"}).then(response => response.text()).then(response => resultContainer.innerHTML = `<h3>Result of decryption :</h3><br><pre>${response}</pre>`);
+		fetch("/", {body : data, method : "post"}).then(response => response.text()).then(response => resultContainer.innerHTML = `<h3>Result of decryption :</h3><br><pre style="white-space: pre-wrap">${response}</pre>`);
 	});
 </script>
 </html>';
